@@ -1,4 +1,4 @@
-# amazoncrawler - Crawl bestsellers in books on Amazon India and US websites.
+# amazoncrawler - Crawls bestsellers in books on Amazon India and US websites.
 
 Description
 -----------------
