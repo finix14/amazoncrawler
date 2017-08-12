@@ -14,8 +14,7 @@ class BookSelector(Selector):
             .extract_first()
             .strip()
             )
-        link_with_domain = re.sub('/gp.*','',AmazonSpider.start_urls[0]) + link[:link.find('?')]
-        return link_with_domain
+        return link
 
     global price
     def price(self,path):
@@ -49,10 +48,15 @@ class BookSelector(Selector):
 class AmazonSpider(scrapy.Spider):
     name = 'amazon'
     allowed_domains = ['amazon.in', 'amazon.com']
-    start_urls = [
-            'http://www.amazon.in/gp/bestsellers/books/',
-            #'https://www.amazon.com/gp/bestsellers/books/',
+    start_urls = []
+
+    def __init__(self,country='',*args,**kwargs):
+        super(AmazonSpider, self).__init__(*args, **kwargs)
+        domain = 'com' if country.lower()=='us' else 'in'
+        self.start_urls = [
+            'http://www.amazon.%s/gp/bestsellers/books/' % domain,
             ]
+        print self.start_urls[0]
 
     def parse(self,response):
         sel = BookSelector(response)
@@ -67,14 +71,17 @@ class AmazonSpider(scrapy.Spider):
 
     def parse_page(self,response):
         cel = BookSelector(response)
+        domain = self.start_urls[0]
         for book in cel.xpath('//div[@class="zg_itemImmersion"]'):
             test_string = "Test String"
+            lnk = book.extract_tag(link,'a')
+            lnk = re.sub('/gp.*','',domain) + lnk[:lnk.find('?')]
             item = {
                 'category' : response.meta['category'],
                 'author' : book.extract_tag(text,'div[@class="a-row a-size-small"]'),
                 'reviews_count' : book.extract_tag(text,'a[@class="a-size-small a-link-normal"]'),
                 'price' : book.extract_tag(price,'span[@class="p13n-sc-price"]'),
-                'link' : book.extract_tag(link,'a'),
+                'link' : lnk,
                 'title' : book.extract_tag(text, 'div[@aria-hidden="true"]'),
                 'rating' : book.extract_tag(rating, 'a//span'),
                     }
