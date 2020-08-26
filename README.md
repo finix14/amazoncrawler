@@ -1,5 +1,6 @@
 # amazoncrawler - Crawls bestsellers in books on Amazon India and US websites.
-
+## Amazon.in data: https://bit.ly/amazon_in_book_data
+## Amazon.com data: https://bit.ly/amazon_com_book_data
 Description
 -----------------
 Web crawler written using Scrapy. It compiles the bestsellers in a single csv file. Domain usage depends on the parameter supplied.
